@@ -125,6 +125,7 @@ void FakeOS_simStep(FakeOS* os){
   // if event over, destroy event
   // and reschedule process
   // if last event, destroy running
+
   FakePCB* running=os->running;
   printf("\trunning pid: %d\n", running?running->pid:-1);
   if (running) {

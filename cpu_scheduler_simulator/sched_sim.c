@@ -7,11 +7,13 @@ FakeOS os;
 
 typedef struct {
   int quantum;
+  int num_cpu;
 } SchedRRArgs;
 
 void schedRR(FakeOS* os, void* args_){
   SchedRRArgs* args=(SchedRRArgs*)args_;
 
+  
   // look for the first process in ready
   // if none, return
   if (! os->ready.first)
@@ -36,14 +38,21 @@ void schedRR(FakeOS* os, void* args_){
     e->duration-=args->quantum;
     List_pushFront(&pcb->events, (ListItem*)qe);
   }
+
+   
 };
 
 int main(int argc, char** argv) {
+
+
+
   FakeOS_init(&os);
   SchedRRArgs srr_args;
   srr_args.quantum=5;
-  os.schedule_args=&srr_args;
-  os.schedule_fn=schedRR;
+  srr_args.num_cpu = strtol(argv[1],NULL,10); //porto argv in int in base 10 (argv puntatore a stringa)
+  printf("num cpu: %d\n",srr_args.num_cpu);
+  os.schedule_args=&srr_args; //passa argomenti a os 
+  os.schedule_fn=schedRR; //passa lo scheduler a os 
   
   for (int i=1; i<argc; ++i){
     FakeProcess new_process;
@@ -63,4 +72,5 @@ int main(int argc, char** argv) {
         || os.processes.first){
     FakeOS_simStep(&os);
   }
+
 }
