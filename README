@@ -1,3 +1,29 @@
 README
 Progetto di sistemi Operativi
-- Scheduler
+- MMU (Memory Mangment Unit)
+
+Per gestire bene la memoria divido gli indirizzi in: Fisici e Logici.
+Indirizzo logico: generato dalla cpu
+Indirizzo fisico: quello effettivamente visualizato dalla ram
+
+Nel Logical Address Space ci sono tutti gli indirizzi logici
+generati dal programma e vengono gestiti proprio dall'MMU, che
+gestisce anche il passaggio o "traduzione" Logico-Fisico.
+
+Gli MMU moderni dividono lo spazio degli indirizzi virtuali in PAGINE
+grandi 2^N bit.
+Gli n bit meno significativi indicano L'OFFSET della pagina
+(di solito rimane invariato) mentre i restanti N-n bit indicano l'effettivo
+indirizzo della pagina.
+
+Per tradurre questi indirizzi si usa una tabella chiamata Tabella Delle Pagine
+in cui prendiamo l'indirizzo virtuale della pagina, lo cerchiamo nella tabella e
+troviamo il corrispettivo indirizzo fisico in memoria.
+
+Questo ci permette di far vedere al processo che sta lavorando con una memoria
+contigua anche se in realta non è cosi
+(ogni processo ha una tabella delle pagine!)
+
+Per evitare un eccessivo EAT(il tempo di una operazione in memoria)
+usiamo il TLB che immagazzina delle entries della tabella delle pagine
+in modo tale da accedervi molto velocemente.
