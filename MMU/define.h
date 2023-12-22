@@ -1,7 +1,8 @@
 //large virtual memory space (16 MB)
 //Use a 1 MB buffer as phyisical memory
 #define memoria_virtuale (128000000) //???? 
-#define memoria_fisica (8000000) //?????
+#define memoria_fisica (8000000) //?????  un buffer praticamente
+#define pag_size 4096
 
 //THE PAGE TABLE
 /*- valid
@@ -15,7 +16,7 @@ typedef struct{
  uint32_t write:1;
  uint32_t swapp:1;
  int num_frame;
-}page_table;
+}Page_Table;
 
 
 /*
@@ -26,17 +27,14 @@ typedef struct MMU {
   uint32_t num_pages;
 } MMU;
 */
-/*typedef struct
-{
-    PageTableEntry page_table[NUM_PAGES];
-    char *physical_memory;
+
+typedef struct{
+    Page_Table page_table[NUM_PAGES];
+    char *memoria_fisica;
     FILE *swap_file;
     int oldest_frame_index;
-    int free_frames[NUM_FRAMES]; // Freelist array
-    int free_frames_top;         // Index for the top of the freelist
-} MMU;*/
-typedef struct{
-
+    int free_mem[NUM_FRAMES]; // Array di punti memoria liberi
+    int free_mem_top;         // Indice della mem piu alto
 }MMU;
 
 
