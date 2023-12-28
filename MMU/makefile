@@ -2,17 +2,18 @@ CC = gcc
 CCOPTS = --std=gnu99 -Wall
 AR = ar
 
-OBJS= main.o mmu.o
+OBJS= main.o mmu_fake.o
 HEADERS= define.h
-BINS= exec
+BINS= run_progam
 
 
-.phony: clean all
-all: $(BINS) $(LIBS)
+.PHONY: clean all
+all: $(LIBS) $(BINS)
 %.o: %.c $(HEADERS)
 	$(CC) $(CCOPTS) -c -o $@ $<
 
 
-exec: $(OBJS)
+run_progam: $(OBJS)
 	$(CC) $(CCOPTS) -o  $@ $^
+
 clean: rm -rf *.o *~ $(LIBS) $(BINS)
