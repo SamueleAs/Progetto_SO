@@ -1,4 +1,5 @@
 #include "define.h"
+#include <stdio.h>
 
 // QUI DEVO FARE GLI ACCESSI IN MEMORIA E TRST
 int main(int argc, char** argv){

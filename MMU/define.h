@@ -1,8 +1,15 @@
+#include<stdio.h>
+#include<stdlib.h>
 //large virtual memory space (16 MB)
 //Use a 1 MB buffer as phyisical memory
-#define memoria_virtuale (128000000) //???? 
-#define memoria_fisica (8000000) //?????  un buffer praticamente
-#define pag_size 4096
+#define memoria_virtuale  16000000 
+
+#define memoria_buffer  8000000 
+
+//#define memoria_fisica    8000000 
+#define pag_size  4096
+#define NUM_PAGES (memoria_virtuale / pag_size)
+#define NUM_FRAMES (memoria_buffer / pag_size)
 
 //THE PAGE TABLE
 /*- valid
@@ -11,10 +18,10 @@
    - write_bit (set by the mmu each time a page is written)
 */
 typedef struct{
- uint32_t valid:1;
- uint32_t read:1;
- uint32_t write:1;
- uint32_t swapp:1;
+ int valid:1;
+ int read:1;
+ int write:1;
+ int swapp:1;
  int num_frame;
 }Page_Table;
 
@@ -44,8 +51,8 @@ typedef struct{
    char* MMU_readByte(MMU* mmu, int pos );
     MMU_exception(MMU* mmu, int pos)
 */
-MMU_writebyte(MMU* mmu, int pos, char c);
+void MMU_writebyte(MMU* mmu, int pos, char c);
 char* MMU_readbyte(MMU* mmu, int pos);
-MMU_exception(MMU* mmu, int pos);
+void MMU_exception(MMU* mmu, int pos);
 
 
