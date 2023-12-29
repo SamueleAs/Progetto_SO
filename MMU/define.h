@@ -52,7 +52,7 @@ typedef struct{
     MMU_exception(MMU* mmu, int pos)
 */
 void MMU_writebyte(MMU* mmu, int pos, char c);
-char* MMU_readbyte(MMU* mmu, int pos);
+char MMU_readbyte(MMU* mmu, int pos);
 void MMU_exception(MMU* mmu, int pos);
 
 

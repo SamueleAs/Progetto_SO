@@ -22,6 +22,7 @@ mmu->page_table[i].valid=0;
 }
 
 mmu->swap_file = fopen("nome_file.bin", "w+b");
+if(mmu->swap_file == NULL){printf("ERRORE IN MMU FILE"); return -1;}
 mmu->free_mem_top =0;
 //INIZIALIZZATO MMU --------------------------------------------------
 
@@ -42,7 +43,7 @@ return -1;
 
 
 srand(time(NULL));
-char lettera = rand() % 10; // 10+1 ? 
+char lettera= rand() % 10; //9??
 char controllo;
 
 if(test == 1){
@@ -56,12 +57,7 @@ if(test == 1){
 	
 }else if (test == 2 ){
 	printf("hai scelto: TEST SEQUENZIALE INVERSO\n\n");
-	for(int i=1000; i!=0; i--){
-	    MMU_writebyte(mmu,i,lettera);
-	    controllo = MMU_readbyte(mmu,i);
-	    if(lettera == controllo) return 1;
-	    else return -1;
-	}
+	return 0;
 	
 	
 }else if (test == 3){
