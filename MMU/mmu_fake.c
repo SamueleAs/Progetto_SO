@@ -41,7 +41,26 @@ char MMU_readByte(MMU *mmu, int pos){
     
 void MMU_exception(MMU* mmu, int pos){
 //REPLACE WITH SECOND CHANCE ALGORITMO
-//FACCIAMO PRIMA I TEST CHE QUESTA È PIU LUNGA
+/*bit per ogni poagina come per supporto hw, quando accedo alla pagina bit a 1,
+poi quando devo rimpiazzare se bit 1 lo metto a 0, se bit 0 cambio la pagina.*/
+
+
+int numero_pagina= pos/pag_size;
+int memoria_libera=0;
+
+if(mmu->free_frames_top > 0){
+memoria_libera = mmu->free_mem[mmu->free_frames_top];
+}
+
+if(memoria_libera == 0 ){
+printf("no memoria libera usiamo algoritmo");
+//VEDIAMO LE PAGINE IN MANIERA CICLICA
+while(){
+}
+
+
+}
+
 
 }
     

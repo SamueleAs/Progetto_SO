@@ -41,7 +41,7 @@ typedef struct{
     FILE *swap_file;
     int oldest_frame_index;
     int free_mem[NUM_FRAMES]; // Array di punti memoria liberi
-    int free_mem_top;         // Indice della mem piu alto
+    int free_frames_top;         // Indice top memoria
 }MMU;
 
 

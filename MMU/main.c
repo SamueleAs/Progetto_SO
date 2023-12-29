@@ -24,7 +24,7 @@ mmu->page_table[i].valid=0;
 
 mmu->swap_file = fopen("nome_file.bin", "w+b");
 if(mmu->swap_file == NULL){printf("ERRORE IN MMU FILE"); return -1;}
-mmu->free_mem_top =0;
+mmu->free_frames_top =0;
 //INIZIALIZZATO MMU --------------------------------------------------
 
 
