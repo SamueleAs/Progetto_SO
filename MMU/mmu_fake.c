@@ -8,7 +8,7 @@ void MMU_writebyte(MMU* mmu , int pos , char c){
     
 	
 	//controlliamo la pagina
-    if (mmu->page_table[numero_pagina].valid == 0){
+    if (!mmu->page_table[numero_pagina].valid){
         printf("PAGE FAULT IN POSIZIONE: %d\n", pos);
         MMU_exception(mmu, pos); //chiamo la funzione per le eccezzioni
     }
@@ -26,7 +26,7 @@ char MMU_readByte(MMU *mmu, int pos){
     int offset = pos % pag_size;    //formule del prof per capire pagina e offset 
     
     //controlliamo la pagina
-    if (mmu->page_table[numero_pagina].valid == 0){
+    if (!mmu->page_table[numero_pagina].valid){
         printf("PAGE FAULT IN POSIZIONE: %d\n", pos);
         MMU_exception(mmu, pos); //chiamo la funzione per le eccezzioni
     }

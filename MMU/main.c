@@ -44,23 +44,34 @@ return -1;
 
 
 srand(time(NULL));
-char lettera= rand() % 10; //9+1??
+char lettera= rand() % 10; //9+1 caratt??
 char controllo;
 
 if(test == 1){
-
-	printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
+        printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
 	for(int i = 0 ; i < 100 ; i++){
 	    MMU_writebyte( mmu , i , lettera);
 	    controllo = MMU_readByte( mmu , i);
-	    if(lettera == controllo) return 1;
-	    else return -1;
-	    return 1;
-	}
+	    if(lettera == controllo){printf("SUCCESSO TEST 1"); return 1;}
+	    else{
+	      	printf("errore I CARATTERI NON SONO UGUALI IN TEST 1");
+	      	return -1;
+	         }
+	      				}
 	
 }else if (test == 2 ){
 	printf("hai scelto: TEST SEQUENZIALE INVERSO\n\n");
-	return 0;
+	for(int i = 1000 ; i < 0 ; i--){
+	printf("entrato for");
+	    MMU_writebyte(mmu,i,lettera);
+	    controllo = MMU_readByte(mmu,i);
+	    printf("lett-scritt");
+	    if(lettera == controllo){printf("SUCCESSO TEST 2"); return 1; }
+	    else{
+	      	printf("errore I CARATTERI NON SONO UGUALI IN TEST 2");
+	      	return -1;
+	         }
+	      				}
 	
 	
 }else if (test == 3){
