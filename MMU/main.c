@@ -17,7 +17,7 @@ mmu->page_table[i].num_frame=0;
 mmu->page_table[i].valid=0;
 }
 
-mmu->swap_file = fopen("nome_file.bin", "permessi");
+mmu->swap_file = fopen("nome_file.bin", "w+b");
 mmu->free_mem_top =0;
 
 
