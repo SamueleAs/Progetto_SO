@@ -4,7 +4,7 @@ AR = ar
 
 OBJS= main.o mmu_fake.o
 HEADERS= define.h
-BINS= run_progam
+BINS= run_program 
 
 
 .PHONY: clean all
@@ -13,7 +13,7 @@ all: $(LIBS) $(BINS)
 	$(CC) $(CCOPTS) -c -o $@ $<
 
 
-run_progam: $(OBJS)
+run_program: $(OBJS)
 	$(CC) $(CCOPTS) -o  $@ $^
 
 clean: rm -rf *.o *~ $(LIBS) $(BINS)

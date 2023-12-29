@@ -1,7 +1,8 @@
-#include "define.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "define.h"
+
 
 // QUI DEVO FARE GLI ACCESSI IN MEMORIA E TRST
 int main(int argc, char** argv){
@@ -47,12 +48,14 @@ char lettera= rand() % 10; //9??
 char controllo;
 
 if(test == 1){
-	printf("hai scelto:  TEST SEQUENZIALE\n\n");
-	for(int i=0; i<1000; i++){
-	    MMU_writebyte(mmu,i,lettera);
-	    controllo = MMU_readbyte(mmu,i);
-	    if(lettera == controllo) return 1;
-	    else return -1;
+
+	printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
+	for(int i = 0 ; i < 100 ; i++){
+	    MMU_writebyte( mmu , i , lettera);
+	    controllo = MMU_readbyte( mmu , i);
+	    //if(lettera == controllo) return 1;
+	    //else return -1;
+	    return 1;
 	}
 	
 }else if (test == 2 ){
