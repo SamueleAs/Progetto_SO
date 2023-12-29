@@ -20,6 +20,7 @@ mmu->page_table[i].valid=0;
 mmu->swap_file = fopen("nome_file.bin", "w+b");
 mmu->free_mem_top =0;
 
+//INIZIALIZZATO MMU 
 
 
 int test;
@@ -29,26 +30,38 @@ scanf("%d", &test);
 printf("\n");
 
 
-
-
 if( test >= 4 || test <= 0 ){
 printf("input errato scegliere solo tra 1/2/3 \n\n");
-return 0;
+return -1;
 }
 
-
-
-
+char lettera = 'a';
+char controllo;
 
 if(test == 1){
 	printf("hai scelto:  TEST SEQUENZIALE\n\n");
-	return 0;
+	for(int i=0; i<1000; i++){
+	    MMU_writebyte(mmu,i,lettera);
+	    controllo = MMU_readbyte(mmu,i);
+	    if(lettera == controllo) return 1;
+	    else return -1;
+	}
+	
 }else if (test == 2 ){
 	printf("hai scelto: TEST SEQUENZIALE INVERSO\n\n");
-	return 0;
+	for(int i=1000; i!=0; i--){
+	    MMU_writebyte(mmu,i,lettera);
+	    controllo = MMU_readbyte(mmu,i);
+	    if(lettera == controllo) return 1;
+	    else return -1;
+	}
+	
+	
 }else if (test == 3){
 	printf("hai scelto: ACCESSO RANDOMICO\n\n");
 	return 0;
+	
+	
 }
 
   
