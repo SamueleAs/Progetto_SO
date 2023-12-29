@@ -9,9 +9,9 @@ int main(int argc, char** argv){
 
 //DOBBIAMO INIZIALIZZARE MMU ------------------------------------------
 MMU *mmu = (MMU*)malloc(sizeof(MMU));
-if(mmu == NULL){printf("ERRORE IN MMU"); return -1;}
+if(mmu == NULL){ printf("ERRORE IN MMU"); return -1; }
 mmu->memoria_fisica= (char*)malloc(sizeof(memoria_buffer));
-if(mmu->memoria_fisica == NULL){printf("ERRORE IN MMU"); return -1;}
+if(mmu->memoria_fisica == NULL){ printf("ERRORE IN MMU"); return -1; }
 
 
 for(int i=0; i<NUM_PAGES;i++){
@@ -44,7 +44,7 @@ return -1;
 
 
 srand(time(NULL));
-char lettera= rand() % 10; //9??
+char lettera= rand() % 10; //9+1??
 char controllo;
 
 if(test == 1){
@@ -52,9 +52,9 @@ if(test == 1){
 	printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
 	for(int i = 0 ; i < 100 ; i++){
 	    MMU_writebyte( mmu , i , lettera);
-	    controllo = MMU_readbyte( mmu , i);
-	    //if(lettera == controllo) return 1;
-	    //else return -1;
+	    controllo = MMU_readByte( mmu , i);
+	    if(lettera == controllo) return 1;
+	    else return -1;
 	    return 1;
 	}
 	
