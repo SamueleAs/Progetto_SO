@@ -40,6 +40,8 @@ char MMU_readByte(MMU *mmu, int pos){
     
     
 void MMU_exception(MMU* mmu, int pos){
+//REPLACE WITH SECOND CHANCE ALGORITMO
+//FACCIAMO PRIMA I TEST CHE QUESTA È PIU LUNGA
 
 }
     
