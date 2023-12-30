@@ -3,15 +3,14 @@
 #include <time.h>
 #include "define.h"
 
-
-// QUI DEVO FARE GLI ACCESSI IN MEMORIA E TRST
+// QUI DEVO FARE GLI ACCESSI IN memoria_buffer2  E TRST
 int main(int argc, char** argv){
 
 //DOBBIAMO INIZIALIZZARE MMU ------------------------------------------
 MMU *mmu = (MMU*)malloc(sizeof(MMU));
 if(mmu == NULL){ printf("ERRORE IN CREAZIONE MMU"); return -1; }
-mmu->memoria_buffer= (char*)malloc(sizeof(memoria_buffer));
-if(mmu->memoria_buffer == NULL){ printf("ERRORE IN memoria_buffer MMU"); return -1; }
+mmu->memoria_fisica = (char*)malloc(sizeof( MEMORIA_BUFFER ));
+if(mmu->memoria_fisica  == NULL){ printf("ERRORE IN memoria_buffer2  MMU"); return -1; }
 
 
 for(int i=0; i<NUM_PAGES;i++){
@@ -25,13 +24,18 @@ mmu->page_table[i].valid=0;
 mmu->swap_file = fopen("nome_file.bin", "wb");
 if(mmu->swap_file == NULL){printf("ERRORE IN MMU FILE APERTURA"); return -1;}
 mmu->free_frames_top =0;
+for (int i = 0; i < NUM_FRAMES; ++i)
+    {
+        mmu->free_mem[i] = i;
+        mmu->free_frames_top++;
+    }
 //INIZIALIZZATO MMU --------------------------------------------------
 
 
 //SCELTA TEST ------------------------------------------------
 int test;
-//CHIEDIAMO QUALE TIPO DI ACCESSO IN MEMORIA VUOLE 
-printf("\n SCEGLIERE IL TIPO DI TEST DA EFFETTUARE IN MEMORIA: \n 1 Accesso Sequenziale\n 2 Accesso Randomico:");
+//CHIEDIAMO QUALE TIPO DI ACCESSO IN memoria_buffer2  VUOLE 
+printf("\n SCEGLIERE IL TIPO DI TEST DA EFFETTUARE IN memoria_buffer2 : \n 1 Accesso Sequenziale\n 2 Accesso Randomico:");
 scanf("%d", &test);
 printf("\n");
 
@@ -40,7 +44,6 @@ printf("input errato scegliere solo tra 1/2 \n\n");
 return -1;
 }
 //-------------------------------------------------------------------
-
 
 
 srand(time(NULL));
@@ -81,18 +84,14 @@ if(test == 1){
 	
 }
   
-  
-/*MMU_writebyte(mmu, 0, 'X');
-MMU_readByte(mmu, 0);
-MMU_writebyte(mmu, memoria_virtuale - 1, 'X');
-MMU_readByte(mmu, memoria_virtuale - 1);*/
-/*fclose(mmu->swap_file);
-free(mmu->memoria_buffer);
+
+fclose(mmu->swap_file);
+free(mmu->memoria_fisica);
 free(mmu);
-  */  
+    
     
 printf("FINITO ORA RETURN");
-return 0;
+
     
 
 

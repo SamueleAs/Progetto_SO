@@ -21,9 +21,9 @@ void MMU_writebyte(MMU* mmu , int pos , char c){
     
     //ora possiamo scrivere
     int num_frame = mmu->page_table[numero_pagina].num_frame;
-    //portiamolo in memoria memoria_buffer
+    //portiamolo in memoria_buffer2  memoria_buffer2 
     int pos_mem_fisica = (num_frame * numero_pagina) + offset ;
-    mmu->memoria_buffer[pos_mem_fisica]= c;
+    mmu->memoria_fisica [pos_mem_fisica]= c;
     mmu->page_table[numero_pagina].write=1; 
 }
 //------------------------------------------------------------
@@ -42,7 +42,7 @@ char MMU_readByte(MMU *mmu, int pos){
     int num_frame = mmu->page_table[numero_pagina].num_frame;
     mmu->page_table[numero_pagina].read = 1;
     int pos_mem_fisica = (num_frame * numero_pagina) + offset;
-    char numero= mmu->memoria_buffer[pos_mem_fisica];
+    char numero= mmu->memoria_fisica [pos_mem_fisica];
     
     return numero; }
 //-----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ void MMU_exception(MMU *mmu, int pos)
                 if (mmu->page_table[j].write)
                 {
                     fseek(mmu->swap_file, j * pag_size, SEEK_SET);
-                    fwrite(&mmu->memoria_buffer[empty_frame * pag_size], 1, pag_size, mmu->swap_file);
+                    fwrite(&mmu->memoria_fisica [empty_frame * pag_size], 1, pag_size, mmu->swap_file);
                 }
                 mmu->page_table[j].valid = 0; // Mark old page as invalid
                 mmu->free_mem[mmu->free_frames_top++] = empty_frame;
@@ -148,7 +148,7 @@ void MMU_exception(MMU *mmu, int pos)
 
     // Read the new page into the frame
     fseek(mmu->swap_file, page_number * pag_size, SEEK_SET);
-    fread(&mmu->memoria_buffer[empty_frame * pag_size], 1, pag_size, mmu->swap_file);
+    fread(&mmu->memoria_fisica [empty_frame * pag_size], 1, pag_size, mmu->swap_file);
 
     // Update the page table
     mmu->page_table[page_number].valid = 1;

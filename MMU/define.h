@@ -1,10 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define memoria_virtuale  16777216 
-#define memoria_buffer 1048576 
+
+#define MEMORIA_BUFFER 1048576
+#define memoria_virtuale 16777216 
 #define pag_size  4096
 #define NUM_PAGES (memoria_virtuale / pag_size)
-#define NUM_FRAMES (memoria_buffer / pag_size)
+#define NUM_FRAMES (MEMORIA_BUFFER / pag_size)
 
 //THE PAGE TABLE
 /*- valid
@@ -32,10 +33,10 @@ typedef struct MMU {
 
 typedef struct{
     Page_Table page_table[NUM_PAGES]; //TABELLA DELLE PAGINE
-    char *memoria_fisica; //PUNTATORE AL BUFFER
+    char *memoria_fisica ; //PUNTATORE AL BUFFER
     FILE *swap_file; // FILE
     int oldest_frame_index; // INDICE DEL FRAME VECCHIO
-    int free_mem[NUM_FRAMES]; // Array di punti memoria liberi
+    int free_mem[NUM_FRAMES]; // Array di punti memoria_buffer2  liberi
     int free_frames_top;         //  LIBERA
 }MMU;
 
