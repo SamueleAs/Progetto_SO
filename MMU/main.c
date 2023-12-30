@@ -16,7 +16,7 @@ if(mmu->memoria_fisica  == NULL){ printf("ERRORE IN memoria_buffer2  MMU"); retu
 for(int i=0; i<NUM_PAGES;i++){
 mmu->page_table[i].read=0;
 mmu->page_table[i].write=0;
-mmu->page_table[i].swapp=(rand() % 10 == 0);
+mmu->page_table[i].swapp=(rand() % 10);
 mmu->page_table[i].num_frame=-1;
 mmu->page_table[i].valid=0;
 }
@@ -35,7 +35,8 @@ for (int i = 0; i < NUM_FRAMES; ++i)
 //SCELTA TEST ------------------------------------------------
 int test;
 //CHIEDIAMO QUALE TIPO DI ACCESSO IN memoria_buffer2  VUOLE 
-printf("\n SCEGLIERE IL TIPO DI TEST DA EFFETTUARE IN memoria_buffer2 : \n 1 Accesso Sequenziale\n 2 Accesso Randomico:");
+printf("\n SCEGLIERE IL TIPO DI TEST DA EFFETTUARE IN MEMORIA : \n 1 Accesso Sequenziale\n 2 Accesso Randomico\n");
+printf("INSERISCI:  ");
 scanf("%d", &test);
 printf("\n");
 
@@ -55,7 +56,7 @@ int pos;
 if(test == 1){
         printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
 	for(int i = 0 ; i < 257 ; i++){
-	    lettera= '0'+i; //9+1 caratt??
+	    lettera= '0'+i;
 	    MMU_writebyte( mmu , i , lettera);
 	    controllo = MMU_readByte( mmu , i);
 	    if(lettera != controllo){printf("ERORRE IN POSIZIONE %d\n\n",i);

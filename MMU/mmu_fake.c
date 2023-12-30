@@ -42,10 +42,13 @@ char MMU_readByte(MMU *mmu, int pos){
     int num_frame = mmu->page_table[numero_pagina].num_frame;
     mmu->page_table[numero_pagina].read = 1;
     int pos_mem_fisica = (num_frame * numero_pagina) + offset;
-    char numero= mmu->memoria_fisica [pos_mem_fisica];
+    char carattere =  mmu->memoria_fisica[pos_mem_fisica];
     
-    return numero; }
+    return carattere; }
 //-----------------------------------------------------------------------------
+
+
+
 
 
 //MMU_EXCEPTION------------------------------------------------------    
