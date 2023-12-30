@@ -1,12 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
-//large virtual memory space (16 MB)
-//Use a 1 MB buffer as phyisical memory
-#define memoria_virtuale  16000000 
-
-#define memoria_buffer  8000000 
-
-//#define memoria_fisica    8000000 
+#define memoria_virtuale  16777216 
+#define memoria_buffer 1048576 
 #define pag_size  4096
 #define NUM_PAGES (memoria_virtuale / pag_size)
 #define NUM_FRAMES (memoria_buffer / pag_size)
@@ -36,12 +31,12 @@ typedef struct MMU {
 */
 
 typedef struct{
-    Page_Table page_table[NUM_PAGES];
-    char *memoria_fisica;
-    FILE *swap_file;
-    int oldest_frame_index;
+    Page_Table page_table[NUM_PAGES]; //TABELLA DELLE PAGINE
+    char *memoria_fisica; //PUNTATORE AL BUFFER
+    FILE *swap_file; // FILE
+    int oldest_frame_index; // INDICE DEL FRAME VECCHIO
     int free_mem[NUM_FRAMES]; // Array di punti memoria liberi
-    int free_frames_top;         // Indice top memoria
+    int free_frames_top;         //  LIBERA
 }MMU;
 
 
