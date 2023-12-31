@@ -13,12 +13,13 @@ if(mmu == NULL){ printf("ERRORE IN CREAZIONE MMU"); return -1; }
 mmu->memoria_fisica = (char*)malloc(MEMORIA_BUFFER);
 if(mmu->memoria_fisica  == NULL){ printf("ERRORE IN ALLOCAZIONE MEMORIA_FISICA  MMU"); return -1; }
 
+
 for(int i=0; i<NUM_PAGES;i++){
 mmu->page_table[i].read=0;
 mmu->page_table[i].write=0;
 mmu->page_table[i].swapp= (rand() % 10);
-mmu->num_frame=-1;
 mmu->page_table[i].valid=0;
+mmu->page_table[i].num_frame=-1;
 }
 
 mmu->swap_file = fopen("nome_file.bin", "w+");
@@ -49,10 +50,10 @@ return -1;
 
 srand(time(NULL));
 char scrivo;
-//char lettera= rand() % 256; //9+1 caratt??
 char leggo;
-int pos;
+int posizione;
 
+//TEST1---------------------------------------------
 if(test == 1){
         printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
 	for(int i = 0 ; i < 100 ; i++){
@@ -63,35 +64,44 @@ if(test == 1){
 	    
 	         
 	      				}
-	printf("TEST SEQUENZIALE SUPERATO\n\n");
-	
-}if (test == 2 ){
+	printf("TEST SEQUENZIALE SUPERATO\n\n");}
+//--------------------------------------------------------------	
+
+
+//TEST2-----------------------------------------------------------------	
+if (test == 2 ){
 	printf("hai scelto: TEST RANDOMICO\n\n");
-	for (int i = 0; i < 9; i++){
+	for (int i = 0; i < 100; i++){
         scrivo = rand() % (i+1);
-        pos = rand() % memoria_virtuale;
-        MMU_writebyte(mmu, pos, scrivo);
-        leggo = MMU_readByte(mmu, pos);
+        posizione = rand() % 1000;
+        
+        MMU_writebyte(mmu, posizione, scrivo);
+        leggo = MMU_readByte(mmu, posizione);
         if (scrivo != leggo){ printf("ERRORE IN POSIZIONE: %d\n", i);return -1;
         }
                                     }
-	
 	printf("TEST RADOMICO SUPERATO!!!!!\n\n");
+	}
+//-------------------------------------------------------------------
 
-}if(test==3){
+
+
+//TEST3-----------------------------------------------------
+if(test==3){
 printf("INIZIO IL TEST AL CONTRARIO\n\n");	     
-for(int i=300; i>0; --i){
+for(int i=30; i>0; --i){
 scrivo= rand() % i;
-pos= i;
-MMU_writebyte(mmu,pos,scrivo);
-leggo = MMU_readByte(mmu,pos);
+posizione= i;      //RINDONDANZA NELL'USO SI POSIZIONE MA PIU FACILE DA LEGG.
+MMU_writebyte(mmu,posizione,scrivo);
+leggo = MMU_readByte(mmu,posizione);
 if(scrivo!=leggo){printf("ERRORE IN POSIZIONE: %d",i); return -1;}
-
-
-}
+			}
 printf("TEST SEQUANZIALE INVERSO SUPERATO!!!\n\n");
 }
-  
+//--------------------------------------------------
+
+
+//FREE----------------
 printf("INIZIO FREE E CLOSE\n");
 fclose(mmu->swap_file);
 printf("FCLOSE FATTA\n");
@@ -99,10 +109,10 @@ free(mmu->memoria_fisica);
 printf("FREE MEMMORIA_FISICA FATTA\n");
 free(mmu);
 printf("FREE MMU FATTO\n");
+//--------------------------------------
   
     
 printf("FINITO ORA RETURN \n\n");
+return 1;
 
-
-return 0;
 }

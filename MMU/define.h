@@ -18,6 +18,7 @@ typedef struct{
  int read:1;
  int write:1;
  int swapp:1;
+ int num_frame;
 }Page_Table;
 
 
@@ -38,7 +39,7 @@ typedef struct{
     int oldest_frame_index; // INDICE DEL FRAME VECCHIO
     int free_mem[NUM_FRAMES]; // Array di punti memoria_buffer2  liberi
     int free_frames_top;         //  LIBERA
-    int num_frame; //NUMERO DI SEGMENTI VALIDI/BUONI
+    //int num_frame; //NUMERO DI SEGMENTI VALIDI/BUONI
 }MMU;
 
 
