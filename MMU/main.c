@@ -55,7 +55,7 @@ int pos;
 
 if(test == 1){
         printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
-	for(int i = 0 ; i < 90 ; ++i){
+	for(int i = 0 ; i < 100 ; i++){
 	    scrivo= '0'+i;
 	    MMU_writebyte( mmu , i , scrivo);
 	    leggo = MMU_readByte( mmu , i);
