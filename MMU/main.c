@@ -10,14 +10,14 @@ int main(int argc, char** argv){
 MMU *mmu = (MMU*)malloc(sizeof(MMU));
 if(mmu == NULL){ printf("ERRORE IN CREAZIONE MMU"); return -1; }
 
-mmu->memoria_fisica = (char*)malloc(sizeof( MEMORIA_BUFFER ));
+mmu->memoria_fisica = (char*)malloc(MEMORIA_BUFFER);
 if(mmu->memoria_fisica  == NULL){ printf("ERRORE IN ALLOCAZIONE MEMORIA_FISICA  MMU"); return -1; }
 
 for(int i=0; i<NUM_PAGES;i++){
 mmu->page_table[i].read=0;
 mmu->page_table[i].write=0;
 mmu->page_table[i].swapp= (rand() % 10);
-mmu->page_table[i].num_frame=-1;
+mmu->num_frame=-1;
 mmu->page_table[i].valid=0;
 }
 
@@ -92,13 +92,13 @@ if(scrivo!=leggo){printf("ERRORE IN POSIZIONE: %d",i); return -1;}
 printf("TEST SEQUANZIALE INVERSO SUPERATO!!!\n\n");
 }
   
-printf("INIZIO FREE E CLOSE");
+printf("INIZIO FREE E CLOSE\n");
 fclose(mmu->swap_file);
-printf("FCLOSE FATTA");
+printf("FCLOSE FATTA\n");
 free(mmu->memoria_fisica);
-printf("FREE MEMMORIA_FISICA FATTA");
+printf("FREE MEMMORIA_FISICA FATTA\n");
 free(mmu);
-printf("FREE MMU FATTO");
+printf("FREE MMU FATTO\n");
   
     
 printf("FINITO ORA RETURN \n\n");

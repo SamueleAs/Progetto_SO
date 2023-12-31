@@ -20,7 +20,7 @@ void MMU_writebyte(MMU* mmu , int pos , char c){
     }
     
     //ora possiamo scrivere
-    int num_frame = mmu->page_table[numero_pagina].num_frame;
+    int num_frame = mmu->num_frame;
     //portiamolo in memoria_buffer2  memoria_buffer2 
     int pos_mem_fisica = (num_frame * numero_pagina) + offset ;
     mmu->memoria_fisica [pos_mem_fisica]= c;
@@ -39,7 +39,7 @@ char MMU_readByte(MMU *mmu, int pos){
         MMU_exception(mmu, pos); //chiamo la funzione per le eccezzioni
     }
     
-    int num_frame = mmu->page_table[numero_pagina].num_frame;
+    int num_frame = mmu->num_frame;
     mmu->page_table[numero_pagina].read = 1;
     int pos_mem_fisica = (num_frame * numero_pagina) + offset;
     char carattere =  mmu->memoria_fisica[pos_mem_fisica];
@@ -79,7 +79,7 @@ void MMU_exception(MMU *mmu, int pos)
             int oldest_page = -1;
             for (int j = 0; j < NUM_PAGES; ++j)
             {
-                if (mmu->page_table[j].num_frame == mmu->oldest_frame_index)
+                if (mmu->num_frame == mmu->oldest_frame_index)
                 {
                     oldest_page = j;
                     break;
@@ -134,7 +134,7 @@ void MMU_exception(MMU *mmu, int pos)
     {
         for (int j = 0; j < NUM_PAGES; ++j)
         {
-            if (mmu->page_table[j].num_frame == empty_frame)
+            if (mmu->num_frame == empty_frame)
             {
                 // Only write back to disk if the page has been modified
                 if (mmu->page_table[j].write)
@@ -155,7 +155,7 @@ void MMU_exception(MMU *mmu, int pos)
 
     // Update the page table
     mmu->page_table[page_number].valid = 1;
-    mmu->page_table[page_number].num_frame = empty_frame;
+    mmu->num_frame = empty_frame;
 
     // Reset read and write bits
     mmu->page_table[page_number].read = 0;

@@ -14,11 +14,10 @@
    - write_bit (set by the mmu each time a page is written)
 */
 typedef struct{
- int valid:1;
+ int valid:1; //INDICANO UN BIT SOLO
  int read:1;
  int write:1;
  int swapp:1;
- int num_frame;
 }Page_Table;
 
 
@@ -30,6 +29,7 @@ typedef struct MMU {
   uint32_t num_pages;
 } MMU;
 */
+//
 
 typedef struct{
     Page_Table page_table[NUM_PAGES]; //TABELLA DELLE PAGINE
@@ -38,6 +38,7 @@ typedef struct{
     int oldest_frame_index; // INDICE DEL FRAME VECCHIO
     int free_mem[NUM_FRAMES]; // Array di punti memoria_buffer2  liberi
     int free_frames_top;         //  LIBERA
+    int num_frame; //NUMERO DI SEGMENTI VALIDI/BUONI
 }MMU;
 
 
