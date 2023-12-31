@@ -19,9 +19,10 @@ mmu->page_table[i].read=0;
 mmu->page_table[i].write=0;
 mmu->page_table[i].swapp= (rand() % 10);
 mmu->page_table[i].valid=0;
-mmu->page_table[i].num_frame=-1;
+//mmu->page_table[i].num_frame=-1;
 }
 
+mmu->num_frame=-1;
 mmu->swap_file = fopen("nome_file.bin", "w+");
 if(mmu->swap_file == NULL){printf("ERRORE IN FILE MMU APERTURA"); return -1;}
 
