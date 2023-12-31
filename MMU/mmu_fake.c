@@ -6,7 +6,7 @@
 void MMU_writebyte(MMU* mmu , int pos , char c){
     int numero_pagina= pos/pag_size;
     int offset = pos % pag_size;    //formule del prof per capire pagina e offset
-    printf("Writing byte %d at position: %d\n", c, pos);
+    printf("SCRIVIAMO %d IN POSIZIONE: %d\n", c, pos);
     
 	
 	//controlliamo la pagina
@@ -15,8 +15,8 @@ void MMU_writebyte(MMU* mmu , int pos , char c){
         MMU_exception(mmu, pos); //chiamo la funzione per le eccezzioni
     }else
     {
-        printf("Page hit at position: %d\n", pos);
-        printf("Page number: %d\n", numero_pagina);
+        printf("HIT IN POSIZIONE: %d\n", pos);
+        printf("NUMERO PAGINA: %d\n", numero_pagina);
     }
     
     //ora possiamo scrivere
@@ -32,7 +32,7 @@ void MMU_writebyte(MMU* mmu , int pos , char c){
 char MMU_readByte(MMU *mmu, int pos){
     int numero_pagina= pos/pag_size;
     int offset = pos % pag_size;    //formule del prof per capire pagina e offset 
-    printf("Reading byte at position: %d\n\n", pos);
+    printf("LEGGO IN POSIZIONE: %d\n\n", pos);
     //controlliamo la pagina
     if (!mmu->page_table[numero_pagina].valid){
         printf("PAGE FAULT IN POSIZIONE: %d\n", pos);
@@ -55,7 +55,7 @@ char MMU_readByte(MMU *mmu, int pos){
 
 void MMU_exception(MMU *mmu, int pos)
 {
-    printf("MMU_exception called for position: %d\n", pos);
+    printf("MMU_EXCEPTION IN POSZIONE: %d\n", pos);
 
     int page_number = pos / pag_size;
     int empty_frame = -1;
@@ -64,13 +64,13 @@ void MMU_exception(MMU *mmu, int pos)
     if (mmu->free_frames_top > 0)
     {
         empty_frame = mmu->free_mem[--mmu->free_frames_top];
-        printf("Found empty frame from free list: %d\n\n", empty_frame);
+        printf("FRAME LIBERO DALLA LISTA: %d\n\n", empty_frame);
     }
 
     // If no empty frame, use Second Chance algorithm
     if (empty_frame == -1)
     {
-        printf("Applying Second Chance algorithm.\n");
+        printf("SECOND CHANGE ALGORITHM.\n");
         int found = 0;
         int iterations = 0;
         while (!found)
@@ -108,7 +108,7 @@ void MMU_exception(MMU *mmu, int pos)
                 }
 
                 // Replace this page
-                printf("Found page to replace: %d\n", oldest_page);
+                printf("PAGINA DA SCAMBIARE: %d\n", oldest_page);
                 empty_frame = mmu->oldest_frame_index;
                 found = 1;
                 break;
@@ -125,7 +125,7 @@ void MMU_exception(MMU *mmu, int pos)
             }
         }
 
-        printf("Iterations taken: %d\n\n", iterations);
+        printf("ITERAZIONE NUMERO: %d\n\n", iterations);
     }
 
     // Update page table and swap in/out as necessary
