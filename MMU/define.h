@@ -3,7 +3,7 @@
 
 #define MEMORIA_BUFFER 1048576
 #define memoria_virtuale 16777216 
-#define pag_size  32
+#define pag_size  4096
 #define NUM_PAGES (memoria_virtuale / pag_size)
 #define NUM_FRAMES (MEMORIA_BUFFER / pag_size)
 

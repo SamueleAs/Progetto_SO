@@ -10,7 +10,7 @@ void MMU_writebyte(MMU* mmu , int pos , char c){
     
 	
 	//controlliamo la pagina
-    if (!mmu->page_table[numero_pagina].valid){
+    if (mmu->page_table[numero_pagina].valid ==0){
         printf("PAGE FAULT IN POSIZIONE: %d\n", pos);
         MMU_exception(mmu, pos); //chiamo la funzione per le eccezzioni
     }else
@@ -34,7 +34,7 @@ char MMU_readByte(MMU *mmu, int pos){
     int offset = pos % pag_size;    //formule del prof per capire pagina e offset 
     printf("LEGGO IN POSIZIONE: %d\n\n", pos);
     //controlliamo la pagina
-    if (!mmu->page_table[numero_pagina].valid){
+    if (mmu->page_table[numero_pagina].valid==0){
         printf("PAGE FAULT IN POSIZIONE: %d\n", pos);
         MMU_exception(mmu, pos); //chiamo la funzione per le eccezzioni
     }
@@ -60,14 +60,14 @@ void MMU_exception(MMU *mmu, int pos)
     int page_number = pos / pag_size;
     int empty_frame = -1;
 
-    // Check for empty space in physical memory
+    // CHERCHIAMO LO SPAZIO IN MMORIA LIBERO
     if (mmu->free_frames_top > 0)
     {
         empty_frame = mmu->free_mem[--mmu->free_frames_top];
         printf("EMPTY FRAME TROVATO : %d\n\n", empty_frame);
     }
 
-    // If no empty frame, use Second Chance algorithm
+    // SE NESSUN FRAME LIBERO USO L'ALGORITMO
     if (empty_frame == -1)
     {
         printf("SECOND CHANCE ALGORITHM\n");
@@ -77,29 +77,31 @@ void MMU_exception(MMU *mmu, int pos)
         {
             iterations++;
             int oldest_page = -1;
-            for (int j = 0; j < NUM_PAGES; ++j)
+            for (int i = 0; i < NUM_PAGES; ++i)
             {
                 if (mmu->num_frame == mmu->oldest_frame_index)
                 {
-                    oldest_page = j;
+                    oldest_page = i;
                     break;
                 }
             }
 
             int conditions[][2] = {
-                {0, 0},  // condition: read_bit = 0, write_bit = 0
-                {1, 0},  // condition: read_bit = 1, write_bit = 0
-                {0, 1},  // condition: read_bit = 0, write_bit = 1
-                {1, 1}   // condition: read_bit = 1, write_bit = 1
+                {0, 0},  // R=0 W=0
+                {1, 0},  // R=1 W=0
+                {0, 1},  // R=0 W=1
+                {1, 1}   // R=1 W=1
             };
             // Check read and write bits for each condition: 00, 10, 01, 11
             for (int i = 0; i < 4; ++i)
             {
+                
+                
                 int read_bit = conditions[i][0];
                 int write_bit = conditions[i][1];
             
-                // Skip unswappable pages or pages not matching the condition
-                if (mmu->page_table[oldest_page].swapp ||
+                // SALTO LE PAGINE NON VALIE
+                if (mmu->page_table[oldest_page].swapp == 1||
                     mmu->page_table[oldest_page].read != read_bit ||
                     mmu->page_table[oldest_page].write != write_bit)
                 {
@@ -107,21 +109,20 @@ void MMU_exception(MMU *mmu, int pos)
                     continue;
                 }
 
-                // Replace this page
+                // TROVO LA PAGINA DA SOSTITUIRE
                 printf("SOSTITUISCO LA PAGINA: %d\n", oldest_page);
                 empty_frame = mmu->oldest_frame_index;
                 found = 1;
                 break;
             }
 
-            if (found)
-                break;
+            if (found) break;
 
-            // Give a second chance to all pages
-            for (int j = 0; j < NUM_PAGES; ++j)
+            // RESET TUUTE LE PAGINE DOPO IL SECOND CHANGE ALGORITMO
+            for (int i = 0; i < NUM_PAGES; i++)
             {
-                mmu->page_table[j].read = 0;
-                mmu->page_table[j].write = 0;
+                mmu->page_table[i].read = 0;
+                mmu->page_table[i].write = 0;
             }
         }
 
@@ -130,7 +131,7 @@ void MMU_exception(MMU *mmu, int pos)
 
     // Update page table and swap in/out as necessary
     //  If replacing an old page, write it back to the swap file
-    if (empty_frame != -1)
+    if (empty_frame != -1) //se trovato
     {
         for (int j = 0; j < NUM_PAGES; ++j)
         {
@@ -149,15 +150,15 @@ void MMU_exception(MMU *mmu, int pos)
         }
     }
 
-    // Read the new page into the frame
+    // LEGGIAMO LA NUOVA PAGINA
     fseek(mmu->swap_file, page_number * pag_size, SEEK_SET);
     fread(&mmu->memoria_fisica[empty_frame * pag_size], 1, pag_size, mmu->swap_file);
 
-    // Update the page table
+    // AGGIORNIAMO LA TABELLA
     mmu->page_table[page_number].valid = 1;
     mmu->num_frame = empty_frame;
 
-    // Reset read and write bits
+    // RESET I BTI
     mmu->page_table[page_number].read = 0;
     mmu->page_table[page_number].write = 0;
 }
