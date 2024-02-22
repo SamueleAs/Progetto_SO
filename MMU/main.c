@@ -1,36 +1,34 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 #include "define.h"
 
-// QUI DEVO FARE GLI ACCESSI IN memoria_buffer2  E TRST
+// ALLOCARE MMU -> INIZIALIZZO -> TEST -> CHIUDO 
 int main(int argc, char** argv){
 
-//DOBBIAMO INIZIALIZZARE MMU ------------------------------------------
-MMU *mmu = (MMU*)malloc(sizeof(MMU));
+//DOBBIAMO INIZIALIZZARE MMU PER I TEST ------------------------------------------
+MMU *mmu = (MMU*)malloc(sizeof(MMU));  
 if(mmu == NULL){ printf("ERRORE IN CREAZIONE MMU"); return -1; }
 
-mmu->memoria_fisica = (char*)malloc(MEMORIA_BUFFER);
+mmu->memoria_fisica = (char*)malloc(MEMORIA_BUFFER); // ALLOCO LA MEMORIA FISICA DI DIMENSI0NE MEMORIA_BUFFER
 if(mmu->memoria_fisica  == NULL){ printf("ERRORE IN ALLOCAZIONE MEMORIA_FISICA  MMU"); return -1; }
 
 
 for(int i=0; i<NUM_PAGES;i++){
-mmu->page_table[i].read=0;
-mmu->page_table[i].write=0;
-mmu->page_table[i].swapp= (rand() % 10);
-mmu->page_table[i].valid=0;
-//mmu->page_table[i].num_frame=-1;
+	mmu->page_table[i].read=0;
+	mmu->page_table[i].write=0;
+	mmu->page_table[i].swapp= 0 /*(rand() % 2)*/;
+	mmu->page_table[i].valid=0;
 }
 
-mmu->num_frame=-1;
-mmu->swap_file = fopen("nome_file.bin", "w+");
-if(mmu->swap_file == NULL){printf("ERRORE IN FILE MMU APERTURA"); return -1;}
+mmu->num_frame=0;
+
+mmu->swap_file = fopen("nome_file.bin", "w+"); // CREAIAMO IL FILE IN LETTURA SCRITTURA 
+if(mmu->swap_file == NULL){printf("ERRORE IN FILE APERTURA"); return -1;}
 
 mmu->free_frames_top =0;
 for (int i = 0; i < NUM_FRAMES; ++i)
     {
-        mmu->free_mem[i] = i;
-        mmu->free_frames_top++;
+        mmu->free_mem[i] = i;    //PER ORA MEM TUTA LIBERA
+        mmu->free_frames_top++; //è il max ovviamente ora
     }
 //INIZIALIZZATO MMU --------------------------------------------------
 
@@ -48,13 +46,12 @@ return -1;
 }
 //-------------------------------------------------------------------
 
-
 srand(time(NULL));
 char scrivo;
 char leggo;
 int posizione;
 
-//TEST1---------------------------------------------
+//TEST1 LINEARE ---------------------------------------------
 if(test == 1){
         printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
 	for(int i = 100 ; i < 500 ; i++){
@@ -62,43 +59,40 @@ if(test == 1){
 	    MMU_writebyte( mmu , i , scrivo);
 	    leggo = MMU_readByte( mmu , i);
 	    if(scrivo != leggo){ printf("ERORRE IN POSIZIONE %d\n\n",i);return -1;}
-	    
-	         
-	      				}
-	printf("TEST SEQUENZIALE SUPERATO\n\n");}
+	                                }
+	printf("TEST SEQUENZIALE SUPERATO\n\n");
+	      }
 //--------------------------------------------------------------	
 
 
-//TEST2-----------------------------------------------------------------	
+//TEST2 CASUALE -----------------------------------------------------------------	
 if (test == 2 ){
 	printf("hai scelto: TEST RANDOMICO\n\n");
-	for (int i = 0; i < 100; i++){
-        scrivo = rand() % (i+1);
-        posizione = rand() % memoria_virtuale;
-        
-        MMU_writebyte(mmu, posizione, scrivo);
-        leggo = MMU_readByte(mmu, posizione);
-        if (scrivo != leggo){ printf("ERRORE IN POSIZIONE: %d\n", i);return -1;
-        }
-                                    }
+	for (int i = 0; i < 500; i++){
+        	scrivo = rand() % (i+1);
+        	posizione = rand() % memoria_virtuale;
+        	MMU_writebyte(mmu, posizione, scrivo);
+        	leggo = MMU_readByte(mmu, posizione);
+        	if (scrivo != leggo){ printf("ERRORE IN POSIZIONE: %d\n", i); return -1;}
+                                     }
 	printf("TEST RADOMICO SUPERATO!!!!!\n\n");
-	}
+	       }
 //-------------------------------------------------------------------
 
 
 
-//TEST3-----------------------------------------------------
+//TEST3 CONTRARIO -----------------------------------------------------
 if(test==3){
-printf("INIZIO IL TEST AL CONTRARIO\n\n");	     
-for(int i=2000; i>0; --i){
-scrivo= rand() % i;
-posizione= i;      //RINDONDANZA NELL'USO SI POSIZIONE MA PIU FACILE DA LEGG.
-MMU_writebyte(mmu,posizione,scrivo);
-leggo = MMU_readByte(mmu,posizione);
-if(scrivo!=leggo){printf("ERRORE IN POSIZIONE: %d",i); return -1;}
-			}
-printf("TEST SEQUANZIALE INVERSO SUPERATO!!!\n\n");
-}
+	printf("INIZIO IL TEST AL CONTRARIO\n\n");	     
+	for(int i=500; i>0; --i){
+		scrivo= rand() % i;
+		posizione= i;      //RINDONDANZA NELL'USO SI POSIZIONE MA PIU FACILE DA LEGG.
+		MMU_writebyte(mmu,posizione,scrivo);
+		leggo = MMU_readByte(mmu,posizione);
+		if(scrivo!=leggo){printf("ERRORE IN POSIZIONE: %d",i); return -1;}
+			          }
+	printf("TEST SEQUANZIALE INVERSO SUPERATO!!!\n\n");
+            }
 //--------------------------------------------------
 
 
@@ -110,6 +104,9 @@ free(mmu->memoria_fisica);
 printf("FREE MEMMORIA_FISICA FATTA\n");
 free(mmu);
 printf("FREE MMU FATTO\n");
+
+int check = remove ("nome_file.bin");
+if(check == -1) printf("ERRORE IN RIMOZIONE FILE");   //COSI OGNI VOLTA ELIMINIAMO IL FILE (MEGLIO PER LA MEMRIA ????)
 //--------------------------------------
   
     
