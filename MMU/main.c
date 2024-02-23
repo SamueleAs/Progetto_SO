@@ -5,31 +5,28 @@
 int main(int argc, char** argv){
 
 //DOBBIAMO INIZIALIZZARE MMU PER I TEST ------------------------------------------
-MMU *mmu = (MMU*)malloc(sizeof(MMU));  
-if(mmu == NULL){ printf("ERRORE IN CREAZIONE MMU"); return -1; }
+	MMU* mmu = (MMU*)malloc(sizeof(MMU));
+	if(mmu == NULL) { printf("ERRORE NELLA CREAZIONE MMU\n"); return-1; }
+	
+	FILE* swap_file = fopen("swap_file.bin","wb+");
+	if(swap_file == NULL)
+	{
+		printf("ERRORE NELL'APERTURA DEL FILE\n");
+		return -1;
+	}
+	
+	for(int i=0;i<NUM_PAGES;i++)
+	{
+		mmu->page_table[i].read=0;
+		mmu->page_table[i].write=0;
+		mmu->page_table[i].valid=0;
+		mmu->page_table[i].swapp=0; 
+		mmu->page_table[i].num_frame=-1;
+	}
+	
+	mmu->indice_vecchio = 0;
+	
 
-mmu->memoria_fisica = (char*)malloc(MEMORIA_BUFFER); // ALLOCO LA MEMORIA FISICA DI DIMENSI0NE MEMORIA_BUFFER
-if(mmu->memoria_fisica  == NULL){ printf("ERRORE IN ALLOCAZIONE MEMORIA_FISICA  MMU"); return -1; }
-
-
-for(int i=0; i<NUM_PAGES;i++){
-	mmu->page_table[i].read=0;
-	mmu->page_table[i].write=0;
-	mmu->page_table[i].swapp= 0 /*(rand() % 2)*/;
-	mmu->page_table[i].valid=0;
-}
-
-mmu->num_frame=0;
-
-mmu->swap_file = fopen("nome_file.bin", "w+"); // CREAIAMO IL FILE IN LETTURA SCRITTURA 
-if(mmu->swap_file == NULL){printf("ERRORE IN FILE APERTURA"); return -1;}
-
-mmu->free_frames_top =0;
-for (int i = 0; i < NUM_FRAMES; ++i)
-    {
-        mmu->free_mem[i] = i;    //PER ORA MEM TUTA LIBERA
-        mmu->free_frames_top++; //è il max ovviamente ora
-    }
 //INIZIALIZZATO MMU --------------------------------------------------
 
 
@@ -69,11 +66,11 @@ if(test == 1){
 if (test == 2 ){
 	printf("hai scelto: TEST RANDOMICO\n\n");
 	for (int i = 0; i < 500; i++){
-        	scrivo = rand() % (i+1);
-        	posizione = rand() % memoria_virtuale;
+        	scrivo = rand() % 256;
+        	posizione = rand() % MEMORIA_VIRTUALE;
         	MMU_writebyte(mmu, posizione, scrivo);
         	leggo = MMU_readByte(mmu, posizione);
-        	if (scrivo != leggo){ printf("ERRORE IN POSIZIONE: %d\n", i); return -1;}
+        	if (scrivo != leggo){ printf("ERRORE IN POSIZIONE: %d\n", i);fclose(mmu->swap_file);free(mmu); return -1;}
                                      }
 	printf("TEST RADOMICO SUPERATO!!!!!\n\n");
 	       }
@@ -100,13 +97,13 @@ if(test==3){
 printf("INIZIO FREE E CLOSE\n");
 fclose(mmu->swap_file);
 printf("FCLOSE FATTA\n");
-free(mmu->memoria_fisica);
-printf("FREE MEMMORIA_FISICA FATTA\n");
+//free(mmu->memoria_fisica);
+//printf("FREE MEMMORIA_FISICA FATTA\n");
 free(mmu);
 printf("FREE MMU FATTO\n");
 
 int check = remove ("nome_file.bin");
-if(check == -1) printf("ERRORE IN RIMOZIONE FILE");   //COSI OGNI VOLTA ELIMINIAMO IL FILE (MEGLIO PER LA MEMRIA ????)
+if(check == -1) printf("ERRORE IN RIMOZIONE FILE\n");   //COSI OGNI VOLTA ELIMINIAMO IL FILE (MEGLIO PER LA MEMRIA ????)
 //--------------------------------------
   
     
