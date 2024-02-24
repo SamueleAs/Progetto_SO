@@ -62,55 +62,6 @@ char MMU_readByte(MMU *mmu, int pos){
     }
 //-----------------------------------------------------------------------------
 
-int find_page_to_replace(MMU* mmu){
-	printf("INIZIA IL SECOND CHANCE ALGORITHM...\n");
-	int repleced = -1;
-	int vecchio = mmu->indice_vecchio;
-	int start=vecchio;
-	
-	//CERCHIAMO UNA PAGINA UTILIZZABILE USANDO L'ALGROTIMO PRIMA CON 0|0
-	while(1)
-	{
-		if(mmu->page_table[vecchio].read == 0 && mmu->page_table[vecchio].write == 0  )
-		{
-			repleced = vecchio;break;
-			
-		}else if(mmu->page_table[vecchio].read == 0 && mmu->page_table[vecchio].write == 1)
-		{
-		repleced = vecchio;
-		break;
-		}
-		else if(mmu->page_table[vecchio].read == 1 && mmu->page_table[vecchio].write == 0 )
-		{
-		repleced = vecchio;
-		break;
-		}
-	
-	
-	//RESETTIAMO I BIT DI RIFERIMENTO 
-	mmu->page_table[repleced].write=0;
-	mmu->page_table[repleced].read=0;
-	
-	//ANDIAMO AVANTI A CONTROLLARE
-	vecchio = (vecchio + 1) % NUM_FRAMES;
-	if(vecchio=start){repleced = -1;break;}
-	if(vecchio = mmu->indice_vecchio){ mmu->indice_vecchio = (mmu->indice_vecchio + 1) % NUM_FRAMES;}
-	
-	}
-	
-	printf("PAGINA REPLECED NEL FRAME: %d\n", repleced);
-	
-	//RETURN DEL FRAME IN CUI ABBIAMO EFFETTUATO LO SWAP
-	return repleced; 
-
-
-
-}
-
-
-
-
-
 //MMU_EXCEPTION------------------------------------------------------    
 
 void MMU_exception(MMU *mmu, int pos)
