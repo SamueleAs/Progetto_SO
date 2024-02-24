@@ -18,13 +18,16 @@ void MMU_writebyte(MMU* mmu , int pos , char c){
 	if(mmu->page_table[numero_pagina].valid == 0 ){
 	printf("PAGE FAULT IN POSIZIONE %d\n", pos);
 	MMU_exception(mmu,pos);  //GESTIAMO L'ECCEZIONE IN CASO DI PAGE FAULT 
-	return ;}
+	}else
+	{
+		  printf("HIT IN POSIZIONE: %d DELLA PAGINA: %d\n", pos , numero_pagina);
+	}
 	
 	//SETTIAMO IL BIT DI SCRITTURA
 	mmu->page_table[numero_pagina].write = 1;
 	
 	//CALCOLIAMO L'INDIRIZZO FISICO
-	int posizione_memoria_fisica = (mmu->page_table[numero_pagina].num_frame * PAGE_SIZE ) + offset;
+	int posizione_memoria_fisica = (mmu->page_table[numero_pagina].num_frame * numero_pagina ) + offset;
 	
 	//SCRIVIAMO ORA IL CARATTERE NEL POSTO GIUSTO IN MEMORIA FISICA
 	mmu->memoria_fisica[posizione_memoria_fisica] = c ;
@@ -49,13 +52,17 @@ char MMU_readByte(MMU *mmu, int pos){
 	if(mmu->page_table[numero_pagina].valid == 0 ){
 	printf("PAGE FAULT IN POSIZIONE %d\n", pos);
 	MMU_exception(mmu,pos);  //GESTIAMO L'ECCEZIONE IN CASO DI PAGE FAULT 
+	}else
+	{
+		 printf("HIT IN POSIZIONE: %d DELLA PAGINA: %d\n", pos , numero_pagina);
+        	
 	}
 	
 	//SETTIAMO IL BIT DI SCRITTURA
 	mmu->page_table[numero_pagina].read = 1;
 	
 	//CALCOLIAMO L'INDIRIZZO FISICO
-	int posizione_memoria_fisica = (mmu->page_table[numero_pagina].num_frame * PAGE_SIZE ) + offset;
+	int posizione_memoria_fisica = (mmu->page_table[numero_pagina].num_frame * numero_pagina ) + offset;
 	
 	//RESTITUIAMO ORA IL CARATTERE NEL POSTO GIUSTO IN MEMORIA FISICA
 	 return mmu->memoria_fisica[posizione_memoria_fisica] ;
@@ -83,8 +90,8 @@ void MMU_exception(MMU *mmu, int pos)
 		
 		if(mmu->free_frames_top > 0)
 		{
-			int frames = NUM_FRAMES - mmu->free_frames_top;
-			mmu->free_frames_top--; //DECREMENTIAMO IL NUMERO DI FRAMES LIBERI 
+			int frames = NUM_FRAMES - mmu->free_frames_top;//DECREMENTIAMO IL NUMERO DI FRAMES LIBERI 
+			mmu->free_frames_top = mmu->free_frames_top--; //DECREMENTIAMO IL NUMERO DI FRAMES LIBERI 
 			
 			mmu->page_table[numero_pagina].valid=1;
 			mmu->page_table[numero_pagina].read=0;
@@ -101,9 +108,9 @@ void MMU_exception(MMU *mmu, int pos)
 			int trovata = 0;
 			while(trovata == 0)
 			{
-				if(mmu->page_table[pagina_da_rimpiazzare].read==1 && mmu->page_table[pagina_da_rimpiazzare].write==1 
-				   || mmu->page_table[pagina_da_rimpiazzare].read==1 && mmu->page_table[pagina_da_rimpiazzare].write==0 
-				   || mmu->page_table[pagina_da_rimpiazzare].read==0 && mmu->page_table[pagina_da_rimpiazzare].write==1)
+				if( (mmu->page_table[pagina_da_rimpiazzare].read==1 && mmu->page_table[pagina_da_rimpiazzare].write==1) 
+				   || (mmu->page_table[pagina_da_rimpiazzare].read==1 && mmu->page_table[pagina_da_rimpiazzare].write==0)
+				   || (mmu->page_table[pagina_da_rimpiazzare].read==0 && mmu->page_table[pagina_da_rimpiazzare].write==1))
 				{
 					trovata = 1;
 				}else
@@ -130,6 +137,7 @@ void MMU_exception(MMU *mmu, int pos)
 			printf("PAGINA CARICATA NEL FRAME:  %d,(SOSTITUENDO LA PAGINA %d)\n",frame_fisico,pagina_da_rimpiazzare);
 			
 			//INCREMENIAMO L'INDICE PER IL PROSSIMO PAGE_FAULT
+			mmu->indice_vecchio = (pagina_da_rimpiazzare + 1) % NUM_FRAMES;
 			
 			
 			

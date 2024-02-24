@@ -24,7 +24,7 @@ typedef struct{
     PageTableEntry page_table[NUM_PAGES];  ///TABELLA DELLE PAGINE
     char memoria_fisica[MEMORIA_BUFFER] ; //PUNTATORE ALLA MEMORIA FISICA
     FILE* swap_file;  //FILE PER LO SWAP
-    int indice_vecchio; //INDICE USATO PER L'ALGORITMO
+    int indice_vecchio; //INDICE USATO PER INIZIARE LA RICERCA
     int free_frames_top; //INDICA IL NUMERO DI FRAMES ATTUALMENTE LIBERI NELLA MEMORIA FISICA
 }MMU;
 
