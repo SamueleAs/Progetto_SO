@@ -33,7 +33,7 @@ typedef struct{
 char MMU_readByte(MMU* mmu, int pos); //LEGGE E RESTITUISCE UN CHAR 
 void MMU_writebyte(MMU* mmu, int pos, char c); //SCRIVE UN CHAR NON RESTITUISCE NIENTE
 void MMU_exception(MMU* mmu, int pos); //CHIAMATA IN CASO DI ECCEZIONI 
-int find_page_to_replace(MMU* mmu); //FUNZIONE CHE TROVA LA PAGINA DA CAMBIARE
+
 
 #endif /* MMU_H */ 
 
