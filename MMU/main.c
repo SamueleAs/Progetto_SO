@@ -8,8 +8,8 @@ int main(int argc, char** argv){
 	MMU* mmu = (MMU*)malloc(sizeof(MMU));
 	if(mmu == NULL) { printf("ERRORE NELLA CREAZIONE MMU\n"); return-1; }
 	
-	FILE* swap_file = fopen("swap_file.bin","wb+");
-	if(swap_file == NULL)
+	mmu->swap_file= fopen("swap_file.bin","wb+");
+	if(mmu->swap_file == NULL)
 	{
 		printf("ERRORE NELL'APERTURA DEL FILE\n");
 		return -1;
@@ -25,6 +25,7 @@ int main(int argc, char** argv){
 	}
 	
 	mmu->indice_vecchio = 0;
+	mmu->free_frames_top = NUM_FRAMES; //INIZIALMETNE SONO TUTTI LIBERI
 	
 
 //INIZIALIZZATO MMU --------------------------------------------------
@@ -94,13 +95,9 @@ if(test==3){
 
 
 //FREE----------------
-printf("INIZIO FREE E CLOSE\n");
 fclose(mmu->swap_file);
-printf("FCLOSE FATTA\n");
-//free(mmu->memoria_fisica);
-//printf("FREE MEMMORIA_FISICA FATTA\n");
 free(mmu);
-printf("FREE MMU FATTO\n");
+printf("PULIZIA MEMORIA FATTA");
 
 int check = remove ("nome_file.bin");
 if(check == -1) printf("ERRORE IN RIMOZIONE FILE\n");   //COSI OGNI VOLTA ELIMINIAMO IL FILE (MEGLIO PER LA MEMRIA ????)

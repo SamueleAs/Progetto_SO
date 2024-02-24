@@ -66,14 +66,24 @@ int find_page_to_replace(MMU* mmu){
 	printf("INIZIA IL SECOND CHANCE ALGORITHM...\n");
 	int repleced = -1;
 	int vecchio = mmu->indice_vecchio;
+	int start=vecchio;
 	
 	//CERCHIAMO UNA PAGINA UTILIZZABILE USANDO L'ALGROTIMO PRIMA CON 0|0
 	while(1)
 	{
-		if(mmu->page_table[vecchio].read == 0 && mmu->page_table[vecchio].write == 0)
+		if(mmu->page_table[vecchio].read == 0 && mmu->page_table[vecchio].write == 0  )
 		{
-			repleced = vecchio;
-			break;
+			repleced = vecchio;break;
+			
+		}else if(mmu->page_table[vecchio].read == 0 && mmu->page_table[vecchio].write == 1)
+		{
+		repleced = vecchio;
+		break;
+		}
+		else if(mmu->page_table[vecchio].read == 1 && mmu->page_table[vecchio].write == 0 )
+		{
+		repleced = vecchio;
+		break;
 		}
 	
 	
@@ -83,6 +93,8 @@ int find_page_to_replace(MMU* mmu){
 	
 	//ANDIAMO AVANTI A CONTROLLARE
 	vecchio = (vecchio + 1) % NUM_FRAMES;
+	if(vecchio=start){repleced = -1;break;}
+	if(vecchio = mmu->indice_vecchio){ mmu->indice_vecchio = (mmu->indice_vecchio + 1) % NUM_FRAMES;}
 	
 	}
 	
@@ -102,41 +114,81 @@ int find_page_to_replace(MMU* mmu){
 //MMU_EXCEPTION------------------------------------------------------    
 
 void MMU_exception(MMU *mmu, int pos)
-{
-    int numero_pagina= pos / PAGE_SIZE;
-    printf("PAGE FAULT DELLA PAGINA: %d IN POSIZIONE: %d\n\n", numero_pagina, pos);
-    
-    //CECHIAMO UN FRAME LIBERO IN MEMORIA FISICA
-    int frame_libero_fisico = -1;
-    for(int i=0;i< NUM_FRAMES;i++)
-    {
-        if(mmu->page_table[i].valid==0)
-        {
-            frame_libero_fisico = i;
-            break;
-        }
-    
-    }
-    
-    //SE NON CI SONO FRAME LIBERI DOBBIAMO USARE L'ALGORITMO DI SECOND
-    if(frame_libero_fisico = -1)
-    {
-    	frame_libero_fisico = find_page_to_replace(mmu);
-    }
-    
-    
-    //AGGIORNIAMO LA NUOVA PAGINA
-    mmu->page_table[numero_pagina].valid=1;
-    mmu->page_table[numero_pagina].read=0;
-    mmu->page_table[numero_pagina].write=0;
-    mmu->page_table[numero_pagina].swapp=0;
-    mmu->page_table[numero_pagina].num_frame= frame_libero_fisico; 
-    
-    //LEGGIAMO LA NUOVA PAGINA DAL FILE DI SWAPP
-    fseek(mmu->swap_file , numero_pagina * PAGE_SIZE , SEEK_SET );
-    fread(&mmu->memoria_fisica[frame_libero_fisico * PAGE_SIZE] , 1 , PAGE_SIZE , mmu->swap_file);
-    
-    printf(" PAGINA CARICATA NEL FRAME %d\n", frame_libero_fisico);
+{//DOBBIAMO GESTIRE UN PAGE_FAULT--> PRIMA TROVIAMO LA PAGINA E CONTROLLIAMO SE NON È CARICATA -> ALTRIMENTI SWAP IN MEMORIA FISICA
+	
+	//TROVIAMO IL NUMERO DELLA PAGINA
+	int numero_pagina = pos / PAGE_SIZE;
+	printf("PAGE_FAULT DELLA PAGINA:  %d IN POSIZIONE: %d\n", numero_pagina, pos);
+	
+	//ORA CONTROLLIAMO SE È GIA NELLA MEMORIA FISICA ATTRAVERSO I BIT DI VALIDITA 
+	if(mmu->page_table[numero_pagina].valid==1)
+	{
+		printf("LA PAGINA È GIA NELLA MEMORIA FISICA\n");
+		return;
+	}else
+	{
+		printf("LA PAGINA NON È CARICATA IN MEMORIA FISICA\n");
+		//ORA DOBBIAMO CONTROLLARE SE C'E ABBASTANZA SPAZIO PER CARICARLA O EFFETTUARE L'ALGORITMO PER IL REPLACE
+		
+		if(mmu->free_frames_top > 0)
+		{
+			int frames = NUM_FRAMES - mmu->free_frames_top;
+			mmu->free_frames_top--; //DECREMENTIAMO IL NUMERO DI FRAMES LIBERI 
+			
+			mmu->page_table[numero_pagina].valid=1;
+			mmu->page_table[numero_pagina].read=0;
+			mmu->page_table[numero_pagina].write=0;
+			mmu->page_table[numero_pagina].swapp=0;
+			mmu->page_table[numero_pagina].num_frame= frames;
+			
+			fseek(mmu->swap_file, numero_pagina * PAGE_SIZE, SEEK_SET);
+			fread(&mmu->memoria_fisica[frames * PAGE_SIZE],1,PAGE_SIZE, mmu->swap_file);
+			printf("PAGINA CARICATA NEL FRAME: %d\n", frames);
+		}else
+		{//DOBBIAMO EFFETTURARE IL REPLACE
+			int pagina_da_rimpiazzare = mmu->indice_vecchio; //PARTIAMO DA QUI A CERCARE
+			int trovata = 0;
+			while(trovata == 0)
+			{
+				if(mmu->page_table[pagina_da_rimpiazzare].read==1 && mmu->page_table[pagina_da_rimpiazzare].write==1 
+				   || mmu->page_table[pagina_da_rimpiazzare].read==1 && mmu->page_table[pagina_da_rimpiazzare].write==0 
+				   || mmu->page_table[pagina_da_rimpiazzare].read==0 && mmu->page_table[pagina_da_rimpiazzare].write==1)
+				{
+					trovata = 1;
+				}else
+				{
+					//METTIAMO I BIT A ZERO E ANDIAMO AVANTI
+					mmu->page_table[pagina_da_rimpiazzare].read=0;
+					mmu->page_table[pagina_da_rimpiazzare].write=0;
+					pagina_da_rimpiazzare = (pagina_da_rimpiazzare + 1) % NUM_FRAMES;
+					
+				}
+			
+			} //FINE DEL WHILE
+			int frame_fisico = mmu->page_table[pagina_da_rimpiazzare].num_frame;
+			
+			//AGGIORNIAMO LA TABELLA
+			mmu->page_table[numero_pagina].valid=1;
+			mmu->page_table[numero_pagina].swapp=0;
+			mmu->page_table[numero_pagina].read=0;
+			mmu->page_table[numero_pagina].write=0;
+			mmu->page_table[numero_pagina].num_frame = frame_fisico; 
+			
+			fseek(mmu->swap_file, numero_pagina * PAGE_SIZE ,SEEK_SET);
+			fread(&mmu->memoria_fisica[frame_fisico * PAGE_SIZE],1,PAGE_SIZE, mmu->swap_file);
+			printf("PAGINA CARICATA NEL FRAME:  %d,(SOSTITUENDO LA PAGINA %d)\n",frame_fisico,pagina_da_rimpiazzare);
+			
+			//INCREMENIAMO L'INDICE PER IL PROSSIMO PAGE_FAULT
+			
+			
+			
+		
+		
+		
+		}
+	}
+
+
 
 }
 
