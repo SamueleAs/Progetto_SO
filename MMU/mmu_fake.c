@@ -94,7 +94,7 @@ void MMU_exception(MMU *mmu, int pos)
 		//ORA DOBBIAMO CONTROLLARE SE C'E ABBASTANZA SPAZIO PER CARICARLA O EFFETTUARE L'ALGORITMO PER IL REPLACE
 		if(mmu->free_frames_top > 0)
 		{
-			int frames = NUM_FRAMES - mmu->free_frames_top; 
+			int frames =  mmu->free_frames_top;  //NUMERO DI FRAME UTILIZZABILI PER LA NUOVA PAGINA (PIU CHIARO)
 			mmu->free_frames_top = mmu->free_frames_top--;  //DECREMENTIAMO IL NUMERO DI FRAMES LIBERI 
 			
 			//CARICHIAMO LA PAGINA IN MEMORIA
@@ -104,13 +104,15 @@ void MMU_exception(MMU *mmu, int pos)
 			mmu->page_table[numero_pagina].swapp=0;
 			mmu->page_table[numero_pagina].num_frame= frames;
 			
+			//PRENDE LO SWAP_FILE E CI METTIAMO NEL PUNTO (NUM_PAG * PAG_SIZ) PARTENDO DALL'INIZIO DEL FILE
 			fseek(mmu->swap_file, numero_pagina * PAGE_SIZE, SEEK_SET);
+			//PRENDE SEMPRE IL PUNTATORE ALLA MEMORIA NELLA POSIZIONE SPECIFICATA, 1 ELEMENTO LETTO DI DIM PAGE-SIZE,DAL 				PUNTATORE DELLO SWAP_FILE
 			fread(&mmu->memoria_fisica[frames * PAGE_SIZE],1,PAGE_SIZE, mmu->swap_file);
 			printf("PAGINA CARICATA NEL FRAME: %d\n", frames);
 		}else
 		{       
 		        //DOBBIAMO EFFETTURARE IL REPLACE
-			int pagina_da_rimpiazzare = mmu->indice_vecchio; //PARTIAMO DA QUI A CERCARE
+			int pagina_da_rimpiazzare = mmu->indice_vecchio; //PARTIAMO DA QUI A CERCARE (INIZIA IN 0)
 			int trovata = 0;
 			while(trovata == 0)
 			{
@@ -131,7 +133,7 @@ void MMU_exception(MMU *mmu, int pos)
 			
 			} //FINE DEL WHILE
 			
-			//MEMORIZZA IL FRAME FISICO DA RIMPIAZZARE
+			//NUMERO DEL FRAME FISICO UTILIZZATO PER MEMORIZZARE LA PAGINA VIRTUALE DOPO LA SOSTITUZIONE
 			int frame_fisico = mmu->page_table[pagina_da_rimpiazzare].num_frame;
 			
 			//AGGIORNA LA PAGINA IN MEMORIA FISICA
