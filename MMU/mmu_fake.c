@@ -15,7 +15,7 @@ void MMU_writebyte(MMU* mmu , int pos , char c){
 	
 	//CONTROLLO VALIDITA DELLA PAGINA
 	if(mmu->page_table[numero_pagina].valid == 0 ){
-	printf("PAGE FAULT IN POSIZIONE %d\n", pos);
+	printf("PAGE FAULT IN POSIZIONE: %d  PER LA PAGINA: %d\n", pos, numero_pagina);
 	//SE LA PAGINA NON È VALIDA GESTIAMO UN PAGE_FAULT	
 	MMU_exception(mmu,pos);  
 	}else
@@ -53,7 +53,7 @@ char MMU_readByte(MMU *mmu, int pos){
 	
 	//CONTROLLO VALIDITA DELLA PAGINA
 	if(mmu->page_table[numero_pagina].valid == 0 ){
-	printf("PAGE FAULT IN POSIZIONE %d\n", pos);
+	printf("PAGE FAULT IN POSIZIONE: %d  PER LA PAGINA: %d\n", pos,numero_pagina);
 	//SE LA PAGINA NON È VALIDA GESTIAMO UN PAGE_FAULT
 	MMU_exception(mmu,pos);  
 	}else
@@ -95,7 +95,8 @@ void MMU_exception(MMU *mmu, int pos)
 		if(mmu->free_frames_top > 0)
 		{
 			int frames =  mmu->free_frames_top;  //NUMERO DI FRAME UTILIZZABILI PER LA NUOVA PAGINA (PIU CHIARO)
-			mmu->free_frames_top = mmu->free_frames_top--;  //DECREMENTIAMO IL NUMERO DI FRAMES LIBERI 
+			printf("ABBIAMO SPAZIO PER CARICARLA, NUMERO DI FRAME ATTUALEMTE LIBERI: %d\n", frames);
+			mmu->free_frames_top = mmu->free_frames_top - 1 ;  //DECREMENTIAMO IL NUMERO DI FRAMES LIBERI 
 			
 			//CARICHIAMO LA PAGINA IN MEMORIA
 			mmu->page_table[numero_pagina].valid=1;
@@ -111,9 +112,12 @@ void MMU_exception(MMU *mmu, int pos)
 			printf("PAGINA CARICATA NEL FRAME: %d\n", frames);
 		}else
 		{       
+			printf("NON ABBIAMO SPAZIO PER CARICARLA, SWAPP");
 		        //DOBBIAMO EFFETTURARE IL REPLACE
 			int pagina_da_rimpiazzare = mmu->indice_vecchio; //PARTIAMO DA QUI A CERCARE (INIZIA IN 0)
 			int trovata = 0;
+		  	
+		  	//VEDE SOLO SE ESISTE UNA PAGINA RIMPIAZABILE E NE PRENDE L'INDICE
 			while(trovata == 0)
 			{
 				//CONDIZIONI PER IL REPLACE DI UNA PAGINA 
@@ -131,10 +135,17 @@ void MMU_exception(MMU *mmu, int pos)
 					
 				}
 			
-			} //FINE DEL WHILE
+			 }//FINE DEL WHILE
+		  	
+		  	 //USCIAMO CON L'INDICE "PAGINA_DA_RIMPIAZZARE" UGUALE ALLA PAGINA CHE RISPETTA UNA DELLE CONDIZIONI PER LO SWAPP
+		  	 //ORA QUEL FRAME SARA UTILIZZATO DALLA NUOVA PAGINA DI CUI CI HANNO DATO LA POS
+			
 			
 			//NUMERO DEL FRAME FISICO UTILIZZATO PER MEMORIZZARE LA PAGINA VIRTUALE DOPO LA SOSTITUZIONE
 			int frame_fisico = mmu->page_table[pagina_da_rimpiazzare].num_frame;
+			
+			
+			//ORA USO QUEL FRAME DI MEMORIA PER LA NUOVA PAGINA
 			
 			//AGGIORNA LA PAGINA IN MEMORIA FISICA
 			mmu->page_table[numero_pagina].valid=1;

@@ -1,6 +1,10 @@
 #include <time.h>
 #include "define.h"
 
+//PAGE FAULT = PAGINA NON ATTUALMENTE IN MEMORIA -> BIT DI VALIDITA = 0 -> PAGE_FAULT
+//PAGE_HIT = PAGINA RICHIETSA È GIA IN MEMORIA
+
+
 // ALLOCARE MMU -> INIZIALIZZO -> TEST -> CHIUDO 
 int main(int argc, char** argv){
 
@@ -112,11 +116,11 @@ free(mmu);
 printf("PULIZIA MEMORIA FATTA\n");
 
 int check = remove ("swap_file.bin");
-if(check == -1) printf("ERRORE IN RIMOZIONE FILE\n");   //COSI OGNI VOLTA ELIMINIAMO IL FILE (MEGLIO PER LA MEMRIA ????)
+if(check == -1) printf("ERRORE IN RIMOZIONE FILE\n");   //COSI OGNI VOLTA ELIMINIAMO IL FILE (MEGLIO PER LA MEMORIA ????)
 //--------------------------------------
   
 //FINE------------------------------------------
-printf("FINITO \n\n");
+printf("FINITO \n");
 return 1;
 
 }
