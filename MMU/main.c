@@ -1,5 +1,6 @@
 #include <time.h>
 #include "define.h"
+#include <time.h>
 
 //PAGE FAULT = PAGINA NON ATTUALMENTE IN MEMORIA -> BIT DI VALIDITA = 0 -> PAGE_FAULT
 //PAGE_HIT = PAGINA RICHIETSA È GIA IN MEMORIA
@@ -7,6 +8,9 @@
 
 // ALLOCARE MMU -> INIZIALIZZO -> TEST -> CHIUDO 
 int main(int argc, char** argv){
+
+//PER IL TEMPO
+clock_t inizio,fine;
 
 //DOBBIAMO INIZIALIZZARE MMU PER I TEST ------------------------------------------
 	MMU* mmu = (MMU*)malloc(sizeof(MMU));
@@ -25,7 +29,7 @@ int main(int argc, char** argv){
 		mmu->page_table[i].write=0;
 		mmu->page_table[i].valid=0;
 		mmu->page_table[i].swapp=0; 
-		mmu->page_table[i].num_frame=-1;
+		mmu->page_table[i].num_frame=0/*-1*/;
 	}
 	
 	mmu->indice_vecchio = 0;
@@ -54,7 +58,8 @@ int posizione;
 //TEST1 LINEARE ---------------------------------------------
 if(test == 1){
         printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
-	for(int i = 0 ; i < 50 ; i++){
+        inizio = clock();
+	for(int i = 0 ; i < 3000 ; i++){
 	    scrivo= '0' + i;
 	    MMU_writebyte( mmu , i , scrivo);
 	    leggo = MMU_readByte( mmu , i);
@@ -62,7 +67,9 @@ if(test == 1){
 	    {
 	    	printf("ERORRE IN POSIZIONE %d\n\n", i); 
 	    	return -1;
+	    
 	    }
+	fine = clock();
 	
 	     				}
 	printf("TEST SEQUENZIALE SUPERATO\n\n");
@@ -73,7 +80,8 @@ if(test == 1){
 //TEST2 CASUALE -----------------------------------------------------------------	
 if (test == 2 ){
 	printf("hai scelto: TEST RANDOMICO\n\n");
-	for (int i = 0; i < 10; ++i){
+	inizio = clock();
+	for (int i = 0; i < 3000; ++i){
         	scrivo = rand() % 256;
         	posizione = rand() % MEMORIA_VIRTUALE;
         	MMU_writebyte(mmu, posizione, scrivo);
@@ -83,6 +91,7 @@ if (test == 2 ){
         	printf("ERRORE IN POSIZIONE: %d\n", i);
         	return -1;
         	}
+        fine= clock();
                                      }
                           
 	printf("TEST RADOMICO SUPERATO!!!!!\n\n");
@@ -93,8 +102,9 @@ if (test == 2 ){
 
 //TEST3 CONTRARIO -----------------------------------------------------
 if(test==3){
-	printf("INIZIO IL TEST AL CONTRARIO\n\n");	     
-	for(int i=50; i>0; --i){
+	printf("INIZIO IL TEST AL CONTRARIO\n\n");	 
+	inizio = clock();    
+	for(int i=3000; i>0; --i){
 		scrivo= rand() % i;
 		posizione= i;      //RINDONDANZA NELL'USO SI POSIZIONE MA PIU FACILE DA LEGG.
 		MMU_writebyte(mmu,posizione,scrivo);
@@ -105,6 +115,7 @@ if(test==3){
 			return -1;
 		}
 			          }
+	fine = clock();
 	printf("TEST SEQUANZIALE INVERSO SUPERATO!!!\n\n");
             }
 //--------------------------------------------------
@@ -121,6 +132,8 @@ if(check == -1) printf("ERRORE IN RIMOZIONE FILE\n");   //COSI OGNI VOLTA ELIMIN
   
 //FINE------------------------------------------
 printf("FINITO \n");
+long double tempo = (float)(fine-inizio) / CLOCKS_PER_SEC;
+printf("TEMPO IMPIEGATO DAL TEST %d : %Lf \n\n",test , tempo );
 return 1;
 
 }

@@ -112,7 +112,7 @@ void MMU_exception(MMU *mmu, int pos)
 			printf("PAGINA CARICATA NEL FRAME: %d\n", frames);
 		}else
 		{       
-			printf("NON ABBIAMO SPAZIO PER CARICARLA, SWAPP");
+			printf("NON ABBIAMO SPAZIO PER CARICARLA, SWAPP\n");
 		        //DOBBIAMO EFFETTURARE IL REPLACE
 			int pagina_da_rimpiazzare = mmu->indice_vecchio; //PARTIAMO DA QUI A CERCARE (INIZIA IN 0)
 			int trovata = 0;
@@ -123,7 +123,8 @@ void MMU_exception(MMU *mmu, int pos)
 				//CONDIZIONI PER IL REPLACE DI UNA PAGINA 
 				if( (mmu->page_table[pagina_da_rimpiazzare].read==1 && mmu->page_table[pagina_da_rimpiazzare].write==1) 
 				   || (mmu->page_table[pagina_da_rimpiazzare].read==1 && mmu->page_table[pagina_da_rimpiazzare].write==0)
-				   || (mmu->page_table[pagina_da_rimpiazzare].read==0 && mmu->page_table[pagina_da_rimpiazzare].write==1))
+				   || (mmu->page_table[pagina_da_rimpiazzare].read==0 && mmu->page_table[pagina_da_rimpiazzare].write==1)
+				   || (mmu->page_table[pagina_da_rimpiazzare].read==0 && mmu->page_table[pagina_da_rimpiazzare].write==0))
 				{
 					trovata = 1;
 				}else
@@ -175,11 +176,4 @@ void MMU_exception(MMU *mmu, int pos)
 
 }
 
-
-
-
-    
-    
-    
-    
 
