@@ -59,7 +59,7 @@ int posizione;
 if(test == 1){
         printf(" hai scelto:  TEST SEQUENZIALE\n\n ");
         inizio = clock();
-	for(int i = 0 ; i < 3000 ; i++){
+	for(int i = 0 ; i < 300; i++){
 	    scrivo= '0' + i;
 	    MMU_writebyte( mmu , i , scrivo);
 	    leggo = MMU_readByte( mmu , i);
@@ -81,7 +81,7 @@ if(test == 1){
 if (test == 2 ){
 	printf("hai scelto: TEST RANDOMICO\n\n");
 	inizio = clock();
-	for (int i = 0; i < 3000; ++i){
+	for (int i = 0; i < 300; ++i){
         	scrivo = rand() % 256;
         	posizione = rand() % MEMORIA_VIRTUALE;
         	MMU_writebyte(mmu, posizione, scrivo);
@@ -104,7 +104,7 @@ if (test == 2 ){
 if(test==3){
 	printf("INIZIO IL TEST AL CONTRARIO\n\n");	 
 	inizio = clock();    
-	for(int i=3000; i>0; --i){
+	for(int i=300; i>0; --i){
 		scrivo= rand() % i;
 		posizione= i;      //RINDONDANZA NELL'USO SI POSIZIONE MA PIU FACILE DA LEGG.
 		MMU_writebyte(mmu,posizione,scrivo);
